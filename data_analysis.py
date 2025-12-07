@@ -10,7 +10,7 @@
 import marimo
 
 __generated_with = "0.1.64"
-app = marimo.App(width="full")
+app = marimo.App(width="full", layout_file="layouts/app.py")
 
 
 # ============================================================================
@@ -44,7 +44,7 @@ def _():
 # CELL 2: Load and Explore Dataset
 # ============================================================================
 @app.cell
-def _(pd):
+def _(pd, np):
     """
     ## Load Housing Price Dataset
     
@@ -119,229 +119,244 @@ def _(data, mo):
 
 
 # ============================================================================
-# CELL 4: INTERACTIVE SLIDER WIDGETS SECTION
+# CELL 4: INTERACTIVE SLIDER WIDGET - PRICE RANGE FILTER
 # ============================================================================
 @app.cell
 def _(ui, mo):
     """
-    ## 🎛️ Interactive Control Panel
+    ## 🎛️ INTERACTIVE SLIDER WIDGET: Price Range Filter
     
-    This cell creates multiple interactive slider widgets to control
-    the data analysis in real-time. All widgets update dependent cells.
+    This cell creates an interactive slider widget to filter properties by price.
+    The slider allows real-time interaction and updates all dependent cells.
     
-    Contact: 23f2001189@ds.study.iitm.ac.in
+    Analyst: 23f2001189@ds.study.iitm.ac.in
     """
-    # === INTERACTIVE SLIDER WIDGET 1: Price Range Filter ===
+    # Create the interactive slider widget
     price_slider = ui.slider(
-        start=150000,
-        stop=1500000,
-        step=50000,
-        value=[300000, 800000],
-        label="💰 Price Range ($)",
-        thumb_label=True
+        start=150000,      # Minimum price
+        stop=1500000,      # Maximum price
+        step=50000,        # Increment step
+        value=[300000, 800000],  # Default range
+        label="💰 Adjust Price Range ($)",
+        thumb_label=True,   # Show current values on thumbs
+        full_width=True     # Use full width
     )
     
-    # === INTERACTIVE SLIDER WIDGET 2: Bedroom Filter ===
-    bedroom_slider = ui.slider(
-        start=2,
-        stop=5,
-        step=1,
-        value=3,
-        label="🛏️ Number of Bedrooms",
-        thumb_label=True
-    )
-    
-    # === INTERACTIVE SLIDER WIDGET 3: Age Filter ===
-    age_slider = ui.slider(
-        start=0,
-        stop=100,
-        step=5,
-        value=[10, 30],
-        label="🏠 Property Age Range (years)",
-        thumb_label=True
-    )
-    
-    # === INTERACTIVE SLIDER WIDGET 4: Square Footage Filter ===
-    sqft_slider = ui.slider(
-        start=800,
-        stop=4000,
-        step=100,
-        value=[1500, 2500],
-        label="📐 Square Footage Range",
-        thumb_label=True
-    )
-    
-    # === INTERACTIVE SLIDER WIDGET 5: Location Score ===
-    location_slider = ui.slider(
-        start=0,
-        stop=10,
-        step=0.5,
-        value=5.0,
-        label="📍 Minimum Location Score (0-10)",
-        thumb_label=True
-    )
-    
-    # === INTERACTIVE SLIDER WIDGET 6: Correlation Threshold ===
-    correlation_slider = ui.slider(
-        start=0.0,
-        stop=1.0,
-        step=0.05,
-        value=0.3,
-        label="📊 Minimum Correlation Threshold",
-        thumb_label=True
-    )
-    
-    # Display the widgets in a nice layout
+    # Display the slider with instructions
     return mo.md(f"""
-    ## 🎚️ Interactive Analysis Controls
+    ### 🎚️ Interactive Price Filter
     
-    Adjust these sliders to interactively filter and analyze the housing data:
+    **Use the slider below to filter properties by price range:**
     
-    ### Filter Controls
     {price_slider}
     
-    {bedroom_slider}
+    **Current Selection:** ${price_slider.value[0]:,} - ${price_slider.value[1]:,}
+    
+    **How it works:**
+    1. Move the left handle to set minimum price
+    2. Move the right handle to set maximum price
+    3. All charts and statistics below will update automatically
+    
+    *Try sliding to see real-time updates!*
+    
+    **Analyst Contact:** 23f2001189@ds.study.iitm.ac.in
+    """), price_slider
+
+
+# ============================================================================
+# CELL 5: INTERACTIVE SLIDER WIDGET - CORRELATION THRESHOLD
+# ============================================================================
+@app.cell
+def _(ui, mo):
+    """
+    ## 🎛️ INTERACTIVE SLIDER WIDGET: Correlation Threshold
+    
+    This cell creates a second interactive slider widget to control
+    the correlation threshold for statistical analysis.
+    
+    Analyst: 23f2001189@ds.study.iitm.ac.in
+    """
+    # Create correlation threshold slider
+    correlation_slider = ui.slider(
+        start=0.0,        # Minimum correlation
+        stop=1.0,         # Maximum correlation
+        step=0.05,        # Increment step
+        value=0.3,        # Default value
+        label="📊 Correlation Threshold (absolute value)",
+        thumb_label=True,  # Show current value
+        full_width=True    # Use full width
+    )
+    
+    # Display the slider
+    return mo.md(f"""
+    ### 🎚️ Interactive Correlation Control
+    
+    **Use this slider to adjust the statistical significance threshold:**
+    
+    {correlation_slider}
+    
+    **Current Threshold:** {correlation_slider.value}
+    
+    **Interpretation:**
+    - Only correlations with absolute value ≥ threshold will be considered significant
+    - Lower values show more relationships
+    - Higher values show only strong relationships
+    
+    **Correlation Strength Guide:**
+    - 0.0-0.3: Weak correlation
+    - 0.3-0.7: Moderate correlation  
+    - 0.7-1.0: Strong correlation
+    
+    *Adjust to explore different levels of relationship strength!*
+    
+    **Analyst:** 23f2001189@ds.study.iitm.ac.in
+    """), correlation_slider
+
+
+# ============================================================================
+# CELL 6: INTERACTIVE SLIDER WIDGET - PROPERTY AGE
+# ============================================================================
+@app.cell
+def _(ui, mo):
+    """
+    ## 🎛️ INTERACTIVE SLIDER WIDGET: Property Age Filter
+    
+    This cell creates a third interactive slider widget to filter by property age.
+    Demonstrates range selection with two handles.
+    
+    Analyst: 23f2001189@ds.study.iitm.ac.in
+    """
+    # Create age range slider
+    age_slider = ui.slider(
+        start=0,          # Minimum age
+        stop=100,         # Maximum age
+        step=5,           # Increment step
+        value=[10, 30],   # Default range
+        label="🏠 Property Age Range (years)",
+        thumb_label=True, # Show current values
+        full_width=True   # Use full width
+    )
+    
+    return mo.md(f"""
+    ### 🎚️ Interactive Age Filter
+    
+    **Filter properties by age range:**
     
     {age_slider}
     
-    {sqft_slider}
+    **Current Selection:** {age_slider.value[0]} - {age_slider.value[1]} years
     
-    {location_slider}
+    **Age Categories:**
+    - 0-10 years: New construction
+    - 10-30 years: Established properties
+    - 30+ years: Older properties
     
-    ### Analysis Controls
-    {correlation_slider}
+    *Move both handles to select your desired age range!*
     
-    *Note: All visualizations and statistics below will update automatically when you adjust these sliders.*
-    
-    **Analyst:** 23f2001189@ds.study.iitm.ac.in
-    """), price_slider, bedroom_slider, age_slider, sqft_slider, location_slider, correlation_slider
+    **Contact:** 23f2001189@ds.study.iitm.ac.in
+    """), age_slider
 
 
 # ============================================================================
-# CELL 5: Filter Data Based on Widgets (Depends on Cells 2 and 4)
+# CELL 7: Filter Data Based on Interactive Sliders (Depends on Cells 2, 4, 6)
 # ============================================================================
 @app.cell
-def _(data, price_slider, bedroom_slider, age_slider, sqft_slider, location_slider, mo):
+def _(data, price_slider, age_slider, mo):
     """
-    ## Apply Filters and Display Results
+    ## Apply Interactive Filters
     
-    This cell filters the dataset based on ALL slider values from Cell 4.
-    It demonstrates variable dependencies between cells.
+    This cell filters the dataset based on slider values from Cells 4 and 6.
+    Demonstrates variable dependencies between cells.
     """
     # Get current slider values
     min_price, max_price = price_slider.value
-    selected_bedrooms = bedroom_slider.value
     min_age, max_age = age_slider.value
-    min_sqft, max_sqft = sqft_slider.value
-    min_location = location_slider.value
     
-    # Apply ALL filters
+    # Apply filters
     filtered_data = data[
         (data['price'] >= min_price) &
         (data['price'] <= max_price) &
-        (data['bedrooms'] == selected_bedrooms) &
         (data['age'] >= min_age) &
-        (data['age'] <= max_age) &
-        (data['square_footage'] >= min_sqft) &
-        (data['square_footage'] <= max_sqft) &
-        (data['location_score'] >= min_location)
+        (data['age'] <= max_age)
     ]
     
-    # Calculate statistics for filtered data
+    # Calculate statistics
     avg_price = filtered_data['price'].mean()
-    avg_sqft = filtered_data['square_footage'].mean()
     avg_age = filtered_data['age'].mean()
-    avg_location = filtered_data['location_score'].mean()
     count = len(filtered_data)
+    percentage = (count / len(data) * 100) if len(data) > 0 else 0
     
-    # Calculate percentage of total data
-    total_count = len(data)
-    percentage = (count / total_count * 100) if total_count > 0 else 0
-    
-    # Dynamic markdown output based on widget state
+    # Dynamic markdown output based on slider states
     return mo.md(f"""
-    ### 🔍 Filtered Results
+    ### 🔍 Interactive Filter Results
     
-    **Applied Filters:**
-    - Price Range: ${min_price:,} - ${max_price:,}
-    - Bedrooms: {selected_bedrooms}
-    - Age Range: {min_age} - {max_age} years
-    - Square Footage: {min_sqft:,} - {max_sqft:,} sq ft
-    - Minimum Location Score: {min_location}/10
+    **Current Filters Applied:**
+    - Price Range: **${min_price:,} - ${max_price:,}**
+    - Age Range: **{min_age} - {max_age} years**
     
     **Results:**
     - 📊 Properties Found: **{count}** ({percentage:.1f}% of total)
     - 💰 Average Price: **${avg_price:,.0f}**
-    - 📐 Average Square Footage: **{avg_sqft:.0f} sq ft**
     - 🏠 Average Age: **{avg_age:.1f} years**
-    - 📍 Average Location Score: **{avg_location:.1f}/10**
+    - 📈 Price Range: **${filtered_data['price'].min():,} - ${filtered_data['price'].max():,}**
     
-    **Price Metrics:**
-    - Price per Sq Ft: **${(avg_price/avg_sqft):.0f}**
-    - Minimum Price: **${filtered_data['price'].min():,.0f}**
-    - Maximum Price: **${filtered_data['price'].max():,.0f}**
+    **Price Distribution:**
+    - 25th Percentile: **${filtered_data['price'].quantile(0.25):,.0f}**
+    - Median: **${filtered_data['price'].median():,.0f}**
+    - 75th Percentile: **${filtered_data['price'].quantile(0.75):,.0f}**
     
-    *Analysis by: 23f2001189@ds.study.iitm.ac.in*
+    *Try adjusting the sliders above to see real-time changes in these statistics!*
     
-    ---
-    
-    *Try adjusting the sliders above to see how the results change in real-time!*
-    """), filtered_data, min_price, max_price, selected_bedrooms, min_age, max_age, min_sqft, max_sqft, min_location, avg_price, avg_sqft, avg_age, avg_location, count, percentage
+    **Analysis by:** 23f2001189@ds.study.iitm.ac.in
+    """), filtered_data, min_price, max_price, min_age, max_age, avg_price, avg_age, count, percentage
 
 
 # ============================================================================
-# CELL 6: Correlation Analysis with Threshold (Depends on Cells 4 and 5)
+# CELL 8: Correlation Analysis with Interactive Threshold (Depends on Cells 5, 7)
 # ============================================================================
 @app.cell
 def _(filtered_data, correlation_slider, mo, np):
     """
-    ## Correlation Analysis with Interactive Threshold
+    ## Interactive Correlation Analysis
     
-    This cell calculates correlations between variables with an interactive
-    threshold filter from the slider. It depends on 'filtered_data' from Cell 5
-    and 'correlation_slider' from Cell 4.
+    This cell performs correlation analysis using the threshold from Cell 5.
+    Shows variable dependencies between cells.
     """
-    # Get current correlation threshold
-    corr_threshold = correlation_slider.value
+    # Get current threshold from slider
+    threshold = correlation_slider.value
     
-    # Calculate correlation matrix
-    corr_matrix = filtered_data.corr()
-    
-    # Calculate individual correlations with price
-    price_correlations = {}
+    # Calculate correlations
+    correlations = {}
     for col in filtered_data.columns:
         if col != 'price':
             corr = np.corrcoef(filtered_data['price'], filtered_data[col])[0, 1]
-            price_correlations[col] = corr
+            correlations[col] = corr
     
-    # Filter correlations based on threshold
-    significant_correlations = {
-        feature: corr 
-        for feature, corr in price_correlations.items() 
-        if abs(corr) >= corr_threshold
-    }
+    # Find significant correlations
+    significant = {k: v for k, v in correlations.items() if abs(v) >= threshold}
     
     # Find strongest correlation
-    if price_correlations:
-        strongest_corr_feature = max(price_correlations, key=lambda k: abs(price_correlations[k]))
-        strongest_corr_value = price_correlations[strongest_corr_feature]
+    if correlations:
+        strongest_feature = max(correlations, key=lambda k: abs(correlations[k]))
+        strongest_value = correlations[strongest_feature]
     else:
-        strongest_corr_feature = "N/A"
-        strongest_corr_value = 0
+        strongest_feature = "N/A"
+        strongest_value = 0
     
     # Create correlation table
-    corr_rows = []
-    for feature, corr in price_correlations.items():
-        significance = "✅ Significant" if abs(corr) >= corr_threshold else "⚠️ Below threshold"
-        direction = "📈 Positive" if corr > 0 else "📉 Negative"
+    rows = []
+    for feature, corr in correlations.items():
+        is_significant = abs(corr) >= threshold
+        significance = "✅ Significant" if is_significant else "⚠️ Below threshold"
         strength = "Strong" if abs(corr) > 0.7 else "Moderate" if abs(corr) > 0.3 else "Weak"
+        direction = "📈 Positive" if corr > 0 else "📉 Negative"
         
-        corr_rows.append(f"""
-        <tr>
+        rows.append(f"""
+        <tr style="background-color: {'#e8f5e8' if is_significant else '#f5f5f5'}">
             <td>{feature.replace('_', ' ').title()}</td>
             <td>{corr:.3f}</td>
-            <td>{direction}</td>
             <td>{strength}</td>
+            <td>{direction}</td>
             <td>{significance}</td>
         </tr>
         """)
@@ -349,101 +364,84 @@ def _(filtered_data, correlation_slider, mo, np):
     return mo.md(f"""
     ### 📊 Interactive Correlation Analysis
     
-    **Current Threshold:** {corr_threshold:.2f}
+    **Current Threshold:** {threshold:.2f}
+    **Significant Correlations:** {len(significant)} of {len(correlations)}
     
-    **Correlations with Price:**
+    **Correlation Matrix:**
     
-    <table style="width:100%">
-        <tr>
+    <table style="width:100%; border-collapse: collapse;">
+        <tr style="background-color: #2c3e50; color: white;">
             <th>Feature</th>
             <th>Correlation</th>
-            <th>Direction</th>
             <th>Strength</th>
+            <th>Direction</th>
             <th>Significance</th>
         </tr>
-        {''.join(corr_rows)}
+        {''.join(rows)}
     </table>
     
-    **Key Findings:**
-    - Strongest Relationship: **{strongest_corr_feature.replace('_', ' ').title()}** 
-      (r = {strongest_corr_value:.3f})
-    - Significant Correlations: **{len(significant_correlations)}** out of {len(price_correlations)} features
-    - Threshold Filter: Showing correlations ≥ {corr_threshold:.2f} in absolute value
+    **Key Finding:**
+    - Strongest relationship: **{strongest_feature.replace('_', ' ').title()}** (r = {strongest_value:.3f})
     
-    **Interpretation Guide:**
-    - |r| ≥ 0.7: Strong relationship
-    - 0.3 ≤ |r| < 0.7: Moderate relationship
-    - |r| < 0.3: Weak relationship
+    **How to use:**
+    1. Adjust the correlation threshold slider above
+    2. Watch the table update in real-time
+    3. Green rows show significant correlations
+    4. Try setting threshold to 0.5 to see only strong relationships
     
-    *Adjust the correlation threshold slider to filter relationships!*
-    
-    *Contact: 23f2001189@ds.study.iitm.ac.in*
-    """), corr_matrix, price_correlations, significant_correlations, strongest_corr_feature, strongest_corr_value, corr_threshold
+    *Analysis Contact: 23f2001189@ds.study.iitm.ac.in*
+    """), correlations, significant, strongest_feature, strongest_value, threshold
 
 
 # ============================================================================
-# CELL 7: Visualizations with Interactive Updates (Depends on Cells 4, 5, 6)
+# CELL 9: Interactive Visualization (Depends on Cells 4, 5, 6, 7, 8)
 # ============================================================================
 @app.cell
-def _(filtered_data, plt, sns, price_correlations, strongest_corr_feature, corr_threshold, mo):
+def _(filtered_data, plt, sns, correlations, strongest_feature, threshold, mo):
     """
-    ## Interactive Data Visualization
+    ## Interactive Visualization Dashboard
     
-    This cell creates visualizations that update based on slider inputs.
-    It depends on multiple variables from previous cells.
+    This cell creates visualizations that update with slider interactions.
+    Shows complex dependencies between multiple cells.
     """
-    # Set style
+    # Set up the plot
     sns.set_style("whitegrid")
-    plt.figure(figsize=(15, 12))
-    
-    # Create subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     
-    # Plot 1: Price distribution with current filter range
-    axes[0, 0].hist(filtered_data['price'], bins=30, edgecolor='black', alpha=0.7, color='skyblue')
+    # Plot 1: Price distribution histogram
+    axes[0, 0].hist(filtered_data['price'], bins=30, alpha=0.7, color='skyblue', edgecolor='black')
     axes[0, 0].axvline(filtered_data['price'].mean(), color='red', linestyle='--', 
                       label=f'Mean: ${filtered_data["price"].mean():,.0f}')
     axes[0, 0].set_xlabel('Price ($)', fontsize=11)
     axes[0, 0].set_ylabel('Frequency', fontsize=11)
-    axes[0, 0].set_title('Price Distribution with Current Filters', fontsize=13, fontweight='bold')
+    axes[0, 0].set_title('Price Distribution (Filtered)', fontsize=13, fontweight='bold')
     axes[0, 0].legend()
     axes[0, 0].grid(True, alpha=0.3)
     
-    # Plot 2: Price vs strongest correlated feature
-    if strongest_corr_feature != "N/A":
-        axes[0, 1].scatter(filtered_data[strongest_corr_feature], 
-                          filtered_data['price'], 
-                          alpha=0.6, 
-                          edgecolors='w', 
-                          s=50,
-                          c=filtered_data['location_score'],
-                          cmap='viridis')
-        axes[0, 1].set_xlabel(strongest_corr_feature.replace('_', ' ').title(), fontsize=11)
+    # Plot 2: Scatter plot of strongest correlation
+    if strongest_feature != "N/A" and strongest_feature in filtered_data.columns:
+        scatter = axes[0, 1].scatter(
+            filtered_data[strongest_feature], 
+            filtered_data['price'],
+            c=filtered_data['age'],
+            cmap='viridis',
+            alpha=0.7,
+            s=50,
+            edgecolor='white'
+        )
+        axes[0, 1].set_xlabel(strongest_feature.replace('_', ' ').title(), fontsize=11)
         axes[0, 1].set_ylabel('Price ($)', fontsize=11)
-        axes[0, 1].set_title(f'Price vs {strongest_corr_feature.replace("_", " ").title()}\n(r = {price_correlations.get(strongest_corr_feature, 0):.3f})', 
+        axes[0, 1].set_title(f'Price vs {strongest_feature.replace("_", " ").title()}\nr = {correlations.get(strongest_feature, 0):.3f}', 
                            fontsize=13, fontweight='bold')
         
-        # Add regression line
-        z = np.polyfit(filtered_data[strongest_corr_feature], filtered_data['price'], 1)
-        p = np.poly1d(z)
-        axes[0, 1].plot(filtered_data[strongest_corr_feature], 
-                       p(filtered_data[strongest_corr_feature]), 
-                       "r--", 
-                       alpha=0.8,
-                       linewidth=2,
-                       label='Regression Line')
-        axes[0, 1].legend()
-        
-        # Add colorbar for location score
-        plt.colorbar(axes[0, 1].collections[0], ax=axes[0, 1], label='Location Score')
-    
-    axes[0, 1].grid(True, alpha=0.3)
+        # Add colorbar for age
+        plt.colorbar(scatter, ax=axes[0, 1], label='Property Age')
+        axes[0, 1].grid(True, alpha=0.3)
     
     # Plot 3: Correlation heatmap
     corr_matrix = filtered_data.corr()
-    im = axes[1, 0].imshow(corr_matrix, cmap='RdYlBu', aspect='auto', vmin=-1, vmax=1)
-    axes[1, 0].set_title(f'Correlation Matrix\n(Threshold ≥ {corr_threshold:.2f})', 
-                        fontsize=13, fontweight='bold')
+    im = axes[1, 0].imshow(corr_matrix, cmap='coolwarm', vmin=-1, vmax=1, aspect='auto')
+    axes[1, 0].set_title(f'Correlation Matrix\n(Threshold ≥ {threshold:.2f})', fontsize=13, fontweight='bold')
     axes[1, 0].set_xticks(range(len(corr_matrix.columns)))
     axes[1, 0].set_yticks(range(len(corr_matrix.columns)))
     axes[1, 0].set_xticklabels([col.replace('_', '\n').title() for col in corr_matrix.columns], 
@@ -451,345 +449,269 @@ def _(filtered_data, plt, sns, price_correlations, strongest_corr_feature, corr_
     axes[1, 0].set_yticklabels([col.replace('_', '\n').title() for col in corr_matrix.columns], 
                               fontsize=9)
     
-    # Add correlation values (only show significant ones)
+    # Add correlation values (only significant ones)
     for i in range(len(corr_matrix.columns)):
         for j in range(len(corr_matrix.columns)):
             corr_value = corr_matrix.iloc[i, j]
-            if abs(corr_value) >= corr_threshold:
+            if i != j and abs(corr_value) >= threshold:
                 color = "white" if abs(corr_value) > 0.5 else "black"
                 axes[1, 0].text(j, i, f'{corr_value:.2f}',
                               ha="center", va="center", 
-                              color=color, fontsize=10, fontweight='bold')
+                              color=color, fontsize=9, fontweight='bold')
     
-    # Add colorbar
     plt.colorbar(im, ax=axes[1, 0], label='Correlation Coefficient')
     
-    # Plot 4: Feature importance (absolute correlation) with threshold line
-    features = list(price_correlations.keys())
-    corr_values = [abs(price_correlations[f]) for f in features]
+    # Plot 4: Bar chart of correlations
+    features = list(correlations.keys())
+    corr_values = [correlations[f] for f in features]
+    abs_values = [abs(v) for v in corr_values]
     
     y_pos = np.arange(len(features))
-    bars = axes[1, 1].barh(y_pos, corr_values, alpha=0.7, 
-                          color=['green' if v >= corr_threshold else 'gray' for v in corr_values])
-    axes[1, 1].axvline(x=corr_threshold, color='red', linestyle='--', 
-                      label=f'Threshold: {corr_threshold:.2f}')
+    colors = ['green' if abs(v) >= threshold else 'gray' for v in corr_values]
+    
+    bars = axes[1, 1].barh(y_pos, corr_values, color=colors, alpha=0.7)
+    axes[1, 1].axvline(x=0, color='black', linewidth=0.8)
+    axes[1, 1].axvline(x=threshold, color='red', linestyle='--', alpha=0.5, label=f'Threshold: {threshold:.2f}')
+    axes[1, 1].axvline(x=-threshold, color='red', linestyle='--', alpha=0.5)
+    
     axes[1, 1].set_yticks(y_pos)
     axes[1, 1].set_yticklabels([f.replace('_', ' ').title() for f in features])
-    axes[1, 1].set_xlabel('Absolute Correlation with Price', fontsize=11)
-    axes[1, 1].set_title('Feature Importance\n(Colored by significance)', 
-                        fontsize=13, fontweight='bold')
+    axes[1, 1].set_xlabel('Correlation with Price', fontsize=11)
+    axes[1, 1].set_title('Feature Correlations (Green = Significant)', fontsize=13, fontweight='bold')
     axes[1, 1].legend()
     axes[1, 1].grid(True, alpha=0.3, axis='x')
     
-    # Add value labels on bars
+    # Add value labels
     for i, (bar, value) in enumerate(zip(bars, corr_values)):
         width = bar.get_width()
-        axes[1, 1].text(width + 0.02, bar.get_y() + bar.get_height()/2,
-                       f'{value:.3f}', ha='left', va='center', fontsize=9)
+        axes[1, 1].text(width + (0.02 if width >= 0 else -0.02), 
+                       bar.get_y() + bar.get_height()/2,
+                       f'{value:.3f}', 
+                       ha='left' if width >= 0 else 'right', 
+                       va='center', 
+                       fontsize=9)
     
     plt.tight_layout()
     
     return mo.md(f"""
     ### 📈 Interactive Visualizations
     
-    These plots update automatically based on your filter selections:
+    **All plots update automatically when you adjust the sliders!**
     
-    1. **Price Distribution** - Shows filtered property prices with mean line
-    2. **Price vs {strongest_corr_feature.replace('_', ' ').title() if strongest_corr_feature != "N/A" else "Key Feature"}** - Scatter plot with regression line (colored by location)
-    3. **Correlation Matrix** - Heatmap showing relationships (values ≥ {corr_threshold:.2f} shown)
-    4. **Feature Importance** - Bar chart showing absolute correlations (green = significant)
+    **Current View:**
+    1. **Price Distribution** - Shows filtered property prices
+    2. **Scatter Plot** - Price vs strongest correlated feature (colored by age)
+    3. **Correlation Matrix** - Heatmap of all correlations (values ≥ {threshold:.2f} shown)
+    4. **Correlation Bar Chart** - Direction and strength of relationships
     
-    *Try adjusting the correlation threshold slider to see how the heatmap and bar chart change!*
+    **Interactive Features:**
+    - Move price slider → Updates histogram and scatter plot
+    - Move age slider → Changes data points in all plots
+    - Move correlation slider → Updates heatmap and bar chart colors
     
-    *Visualizations generated by: 23f2001189@ds.study.iitm.ac.in*
+    *Visualizations created by: 23f2001189@ds.study.iitm.ac.in*
     """), fig
 
 
 # ============================================================================
-# CELL 8: Statistical Model with Interactive Features (Depends on Cells 4, 5)
+# CELL 10: Interactive Prediction Model (Depends on Cells 4, 5, 6, 7)
 # ============================================================================
 @app.cell
-def _(filtered_data, corr_threshold, mo):
+def _(filtered_data, ui, mo, np, pd):
     """
-    ## Statistical Modeling with Interactive Threshold
+    ## Interactive Price Prediction Model
     
-    This cell performs linear regression based on filtered data and threshold.
-    It depends on the filtered dataset from Cell 5 and threshold from Cell 4.
+    This cell creates an interactive prediction tool that uses
+    the filtered data and allows user input.
     """
     from sklearn.linear_model import LinearRegression
-    from sklearn.metrics import r2_score, mean_squared_error
     from sklearn.preprocessing import StandardScaler
     
-    # Only use features with correlation above threshold
-    corr_with_price = filtered_data.corr()['price'].abs()
-    significant_features = corr_with_price[corr_with_price >= corr_threshold].index.tolist()
-    
-    # Remove 'price' from features if present
-    if 'price' in significant_features:
-        significant_features.remove('price')
-    
-    if len(significant_features) == 0:
-        significant_features = filtered_data.columns.drop('price').tolist()
-    
-    # Prepare features and target
-    X = filtered_data[significant_features]
-    y = filtered_data['price']
-    
-    # Check if we have enough data
-    if len(X) < 2:
-        return mo.md("""
-        ### ⚠️ Insufficient Data for Modeling
+    # Prepare data for modeling
+    if len(filtered_data) > 10:
+        X = filtered_data[['square_footage', 'bedrooms', 'bathrooms', 'age', 'location_score']]
+        y = filtered_data['price']
         
-        The current filters result in too few data points for statistical modeling.
-        Please adjust the sliders to include more properties.
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        model = LinearRegression()
+        model.fit(X_scaled, y)
+        
+        # Create interactive input sliders
+        sqft_slider = ui.slider(
+            start=800, stop=4000, step=100, value=2000,
+            label="📐 Square Footage", thumb_label=True
+        )
+        
+        bed_slider = ui.slider(
+            start=2, stop=5, step=1, value=3,
+            label="🛏️ Bedrooms", thumb_label=True
+        )
+        
+        bath_slider = ui.slider(
+            start=1, stop=3, step=0.5, value=2,
+            label="🚿 Bathrooms", thumb_label=True
+        )
+        
+        pred_age_slider = ui.slider(
+            start=0, stop=100, step=5, value=20,
+            label="🏠 Property Age", thumb_label=True
+        )
+        
+        loc_slider = ui.slider(
+            start=0, stop=10, step=0.5, value=5,
+            label="📍 Location Score", thumb_label=True
+        )
+        
+        # Get current values
+        input_values = np.array([
+            sqft_slider.value,
+            bed_slider.value,
+            bath_slider.value,
+            pred_age_slider.value,
+            loc_slider.value
+        ]).reshape(1, -1)
+        
+        # Scale and predict
+        input_scaled = scaler.transform(input_values)
+        predicted_price = model.predict(input_scaled)[0]
+        
+        # Calculate feature importance
+        importance = pd.DataFrame({
+            'Feature': ['Square Footage', 'Bedrooms', 'Bathrooms', 'Age', 'Location'],
+            'Coefficient': model.coef_,
+            'Impact': np.abs(model.coef_)
+        }).sort_values('Impact', ascending=False)
+        
+        return mo.md(f"""
+        ### 🎯 Interactive Price Predictor
+        
+        **Adjust these sliders to predict property prices:**
+        
+        {sqft_slider}
+        
+        {bed_slider}
+        
+        {bath_slider}
+        
+        {pred_age_slider}
+        
+        {loc_slider}
+        
+        **Prediction Result:**
+        
+        <div style="background: linear-gradient(135deg, #4CAF50, #8BC34A); 
+                    padding: 25px; 
+                    border-radius: 10px; 
+                    color: white; 
+                    text-align: center;
+                    margin: 20px 0;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="color: white; margin: 0; font-size: 2em;">
+            ${predicted_price:,.0f}
+            </h2>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">
+            Estimated Property Value
+            </p>
+        </div>
+        
+        **Most Important Features:**
+        1. **{importance.iloc[0]['Feature']}** (Impact: {abs(importance.iloc[0]['Coefficient']):.1f})
+        2. **{importance.iloc[1]['Feature']}** (Impact: {abs(importance.iloc[1]['Coefficient']):.1f})
+        3. **{importance.iloc[2]['Feature']}** (Impact: {abs(importance.iloc[2]['Coefficient']):.1f})
+        
+        **Model Details:**
+        - Based on {len(filtered_data)} filtered properties
+        - R² Score: {model.score(X_scaled, y):.3f}
+        - All values update in real-time
+        
+        *Predictor created by: 23f2001189@ds.study.iitm.ac.in*
+        """), model, predicted_price, importance, sqft_slider, bed_slider, bath_slider, pred_age_slider, loc_slider
+    
+    else:
+        return mo.md("""
+        ### ⚠️ Insufficient Data for Prediction
+        
+        Please adjust the filters to include more properties for accurate prediction.
+        Currently only {len(filtered_data)} properties match your criteria.
         
         *Contact: 23f2001189@ds.study.iitm.ac.in*
         """), None, None, None, None, None, None, None, None
-    
-    # Scale features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Fit linear regression
-    model = LinearRegression()
-    model.fit(X_scaled, y)
-    
-    # Make predictions
-    y_pred = model.predict(X_scaled)
-    
-    # Calculate metrics
-    r2 = r2_score(y, y_pred)
-    mse = mean_squared_error(y, y_pred)
-    rmse = np.sqrt(mse)
-    
-    # Calculate coefficients and importance
-    feature_names = X.columns
-    coefficients = model.coef_
-    intercept = model.intercept_
-    
-    # Create coefficient table sorted by absolute impact
-    coeff_table = pd.DataFrame({
-        'Feature': feature_names,
-        'Coefficient': coefficients,
-        'Absolute_Impact': np.abs(coefficients),
-        'Standardized_Coefficient': coefficients / np.std(X_scaled, axis=0) if len(X_scaled) > 0 else coefficients
-    }).sort_values('Absolute_Impact', ascending=False)
-    
-    # Calculate price prediction for average property
-    if len(X) > 0:
-        avg_property = X.mean().values.reshape(1, -1)
-        avg_property_scaled = scaler.transform(avg_property)
-        predicted_avg_price = model.predict(avg_property_scaled)[0]
-    else:
-        predicted_avg_price = 0
-    
-    return mo.md(f"""
-    ### 🧮 Interactive Linear Regression Model
-    
-    **Model Details:**
-    - Features used: **{len(significant_features)}** (correlation ≥ {corr_threshold:.2f})
-    - Samples: **{len(X)}** properties
-    - R² Score: **{r2:.4f}**
-    - RMSE: **${rmse:,.0f}**
-    
-    **Feature Coefficients:**
-    
-    | Feature | Coefficient | Impact per Std Dev |
-    |---------|-------------|-------------------|
-    {''.join([f"| {row['Feature'].replace('_', ' ').title()} | ${row['Coefficient']:,.0f} | ${row['Standardized_Coefficient']:,.0f} |\n" for _, row in coeff_table.iterrows()])}
-    
-    **Model Equation:**
-    Price = ${intercept:,.0f} {' + '.join([f'({coeff:,.0f} × {feat})' for feat, coeff in zip(feature_names, coefficients)])}
-    
-    **Interpretation:**
-    - Intercept: Base price of **${intercept:,.0f}**
-    - Most important feature: **{coeff_table.iloc[0]['Feature'].replace('_', ' ').title()}**
-    - Each standard deviation increase adds **${abs(coeff_table.iloc[0]['Standardized_Coefficient']):,.0f}** to price
-    
-    **Predicted Price for Average Property:** ${predicted_avg_price:,.0f}
-    
-    *Model automatically updates based on correlation threshold!*
-    
-    *Model developed by: 23f2001189@ds.study.iitm.ac.in*
-    """), model, r2, rmse, coefficients, intercept, coeff_table, predicted_avg_price, scaler, significant_features
 
 
 # ============================================================================
-# CELL 9: Interactive Prediction Tool (Depends on Cell 8)
+# CELL 11: Summary Dashboard (Depends on Multiple Cells)
 # ============================================================================
 @app.cell
-def _(ui, mo, model, scaler, significant_features, predicted_avg_price):
+def _(mo, count, percentage, avg_price, strongest_feature, strongest_value, 
+      threshold, correlations):
     """
-    ## Interactive Price Predictor
-    
-    This cell creates an interactive tool to predict property prices
-    based on user inputs. It depends on the trained model from Cell 8.
-    """
-    # Create dynamic input widgets based on significant features
-    input_widgets = {}
-    input_values = {}
-    
-    # Default ranges for features
-    feature_ranges = {
-        'square_footage': (800, 4000, 2000),
-        'bedrooms': (2, 5, 3),
-        'bathrooms': (1, 3, 2),
-        'age': (0, 100, 20),
-        'location_score': (0, 10, 5)
-    }
-    
-    # Create widgets only for significant features
-    widget_html = []
-    for feature in significant_features:
-        if feature in feature_ranges:
-            start, stop, default = feature_ranges[feature]
-            
-            if feature in ['bedrooms', 'bathrooms']:
-                widget = ui.slider(
-                    start=start,
-                    stop=stop,
-                    step=0.5 if feature == 'bathrooms' else 1,
-                    value=default,
-                    label=f"{feature.replace('_', ' ').title()}",
-                    thumb_label=True
-                )
-            else:
-                widget = ui.slider(
-                    start=start,
-                    stop=stop,
-                    step=(stop-start)/100,
-                    value=default,
-                    label=f"{feature.replace('_', ' ').title()}",
-                    thumb_label=True
-                )
-            
-            input_widgets[feature] = widget
-            input_values[feature] = widget.value
-            widget_html.append(f"{widget}")
-    
-    # Prepare input for model
-    if significant_features and input_values:
-        input_array = np.array([input_values[f] for f in significant_features]).reshape(1, -1)
-        input_scaled = scaler.transform(input_array)
-        predicted_price = model.predict(input_scaled)[0]
-        price_difference = predicted_price - predicted_avg_price
-    else:
-        predicted_price = 0
-        price_difference = 0
-    
-    return mo.md(f"""
-    ### 🎯 Interactive Price Predictor
-    
-    Adjust the sliders below to predict property prices in real-time:
-    
-    **Input Parameters:**
-    {''.join(widget_html)}
-    
-    **Current Inputs:**
-    {''.join([f"- {feat.replace('_', ' ').title()}: {val:.1f}<br>" for feat, val in input_values.items()])}
-    
-    **Prediction Results:**
-    
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 25px; 
-                border-radius: 15px; 
-                color: white; 
-                margin: 25px 0;
-                text-align: center;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-        <h2 style="color: white; margin: 0; font-size: 2em;">
-        ${predicted_price:,.0f}
-        </h2>
-        <p style="margin: 15px 0 0 0; font-size: 1.2em;">
-        Estimated Property Value
-        </p>
-        <p style="margin: 10px 0 0 0; opacity: 0.9;">
-        {f'${abs(price_difference):,.0f} {"above" if price_difference > 0 else "below"} average'}
-        </p>
-    </div>
-    
-    **Features Used in Prediction:**
-    - Model uses {len(significant_features)} features with correlation above threshold
-    - Each slider adjusts one feature in the prediction model
-    
-    *Try adjusting the sliders to see how each feature affects the predicted price!*
-    
-    *Predictor created by: 23f2001189@ds.study.iitm.ac.in*
-    """), input_widgets, input_values, predicted_price, price_difference
-
-
-# ============================================================================
-# CELL 10: Summary Dashboard (Depends on Multiple Cells)
-# ============================================================================
-@app.cell
-def _(mo, count, percentage, avg_price, strongest_corr_feature, strongest_corr_value, 
-      corr_threshold, r2, rmse, len, significant_features):
-    """
-    ## Interactive Analysis Dashboard
+    ## Interactive Analysis Summary
     
     This cell provides a comprehensive summary that updates with all interactions.
-    It depends on results from multiple previous cells.
+    Shows dependencies on multiple previous cells.
     """
     return mo.md(f"""
     # 📊 Interactive Analysis Dashboard
     
-    ## 🎛️ Current Settings Summary
+    ## 📋 Current Analysis State
     
-    **Data Filters:**
-    - Properties analyzed: **{count}** ({percentage:.1f}% of total dataset)
-    - Average filtered price: **${avg_price:,.0f}**
+    **Data Summary:**
+    - Properties analyzed: **{count}** ({percentage:.1f}% of total)
+    - Average price: **${avg_price:,.0f}**
     
     **Analysis Parameters:**
-    - Correlation threshold: **{corr_threshold:.2f}**
-    - Significant features in model: **{len(significant_features)}**
+    - Correlation threshold: **{threshold:.2f}**
+    - Significant features: **{len([c for c in correlations.values() if abs(c) >= threshold])}** of {len(correlations)}
     
-    ## 📈 Key Insights
+    ## 🎛️ Interactive Controls Used
     
-    1. **Strongest Relationship Found:**
-       - Feature: **{strongest_corr_feature.replace('_', ' ').title() if strongest_corr_feature != "N/A" else "N/A"}**
-       - Correlation: **{strongest_corr_value:.3f}**
-       - This feature explains the most variation in housing prices
+    1. **Price Range Slider** - Filters properties by price
+    2. **Age Range Slider** - Filters properties by age  
+    3. **Correlation Threshold Slider** - Controls statistical sensitivity
     
-    2. **Model Performance:**
-       - Prediction accuracy (R²): **{r2:.4f}**
-       - Average prediction error: **${rmse:,.0f}**
+    ## 📈 Key Findings
     
-    3. **Interactive Features:**
-       - 6 interactive sliders controlling filters and analysis
-       - Real-time visual updates
-       - Dynamic statistical modeling
-       - Live price prediction tool
+    **Strongest Relationship:**
+    - Feature: **{strongest_feature.replace('_', ' ').title() if strongest_feature != 'N/A' else 'N/A'}**
+    - Correlation: **{strongest_value:.3f}**
+    - This explains price variation better than other features
     
-    ## 🔄 How to Use This Notebook
+    **Significant Correlations (≥ {threshold:.2f}):**
+    {''.join([f"- {k.replace('_', ' ').title()}: {v:.3f}\\n" for k, v in correlations.items() if abs(v) >= threshold])}
     
-    1. **Adjust filters** using the sliders in the control panel
-    2. **Observe changes** in visualizations and statistics
-    3. **Modify analysis parameters** like correlation threshold
-    4. **Use the predictor** to estimate property values
-    5. **All components update automatically** in real-time
+    ## 🔄 Real-time Features
     
-    ## 📧 Contact & Information
+    This notebook demonstrates:
+    - **Reactive programming** with Marimo
+    - **Automatic updates** when sliders change
+    - **Dynamic visualizations** that refresh in real-time
+    - **Interactive statistical analysis**
+    - **Live price prediction**
+    
+    ## 📧 Contact Information
     
     **Data Scientist:** 23f2001189@ds.study.iitm.ac.in
     
     **Notebook Features:**
-    - Reactive programming with Marimo
-    - Real-time data filtering
-    - Interactive visualizations
-    - Statistical modeling
-    - Predictive analytics
+    ✅ Multiple interactive slider widgets  
+    ✅ Variable dependencies between cells  
+    ✅ Dynamic markdown output  
+    ✅ Real-time visualizations  
+    ✅ Statistical modeling  
+    ✅ Price prediction tool
     
     ---
     
-    *This interactive notebook demonstrates the power of reactive data analysis.
-    All components are connected - changing any slider updates the entire analysis.*
+    *Try adjusting any slider to see the entire analysis update automatically!*
     
-    *Last updated: December 2023 | Version: 2.0*
+    *Created: December 2023 | Version: 3.0*
     """)
 
 
 # ============================================================================
-# Run the app
+# Run the application
 # ============================================================================
 if __name__ == "__main__":
     app.run()
